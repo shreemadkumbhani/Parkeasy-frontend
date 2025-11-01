@@ -1,0 +1,168 @@
+/* About page styled to match ParkEasy dark theme with gradient member cards */
+.about {
+  padding: 24px 16px;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.title {
+  text-align: center;
+  margin: 12px 0 6px;
+  font-size: 2.2rem;
+}
+.subtitle {
+  text-align: center;
+  opacity: 0.8;
+  max-width: 760px;
+  margin: 0 auto 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin-top: 12px;
+}
+
+.member {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(236, 72, 153, 0.12)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 330px;
+}
+.member-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.member::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    50% 60% at 100% 0%,
+    rgba(99, 102, 241, 0.15),
+    transparent 60%
+  );
+}
+.member-top {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.info {
+  flex: 1;
+}
+.label {
+  font-weight: 700;
+  opacity: 0.9;
+}
+.label.small {
+  font-size: 0.92rem;
+  opacity: 0.75;
+}
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.row.two .col {
+  flex: 1;
+}
+.value {
+  opacity: 0.95;
+}
+.names {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 2px;
+}
+.member-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+.member-role {
+  opacity: 0.9;
+}
+.subline {
+  opacity: 0.8;
+  font-size: 0.95rem;
+  margin-top: 2px;
+}
+
+.edu {
+  padding: 10px 2px;
+}
+.label.center {
+  text-align: center;
+  margin-bottom: 6px;
+}
+.muted {
+  opacity: 0.75;
+}
+.bold {
+  font-weight: 700;
+}
+.bio {
+  opacity: 0.9;
+  margin-top: 6px;
+}
+
+.socials {
+  display: flex;
+  gap: 10px;
+  padding-top: 12px;
+}
+.socials a {
+  display: inline-flex;
+  padding: 8px;
+  border-radius: 10px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.socials a:hover {
+  background: #171717;
+}
+
+.values {
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 18px;
+}
+.values h2 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+.values ul {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

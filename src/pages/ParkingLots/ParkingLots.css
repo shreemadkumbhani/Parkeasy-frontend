@@ -1,0 +1,48 @@
+.parkinglots-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.parkinglots-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1d4ed8;
+  margin-bottom: 24px;
+}
+
+.parkinglots-empty {
+  color: #6b7280;
+}
+
+.parkinglots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.parkinglot-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.parkinglot-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.parkinglot-location {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.parkinglot-availability {
+  margin-top: 8px;
+  color: #059669;
+  font-size: 14px;
+}
