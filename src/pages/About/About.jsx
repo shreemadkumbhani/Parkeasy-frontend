@@ -39,7 +39,7 @@ const team = [
     },
   },
   {
-    name: "Het Kashariya",
+    name: "Het Keshariya",
     role: "Full Stack Developer",
     headline: "",
     location: "",

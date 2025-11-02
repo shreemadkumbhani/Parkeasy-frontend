@@ -35,6 +35,32 @@
   border-radius: 8px;
   padding: 10px 12px;
 }
+/* Anchor for suggestions dropdown */
+.search-wrap {
+  position: relative;
+}
+
+/* Dark-themed suggestions dropdown */
+.sug-list {
+  background: #121212;
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  max-height: 240px;
+  overflow-y: auto;
+}
+.sug-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.sug-item:last-child {
+  border-bottom: none;
+}
+.sug-item:hover {
+  background: #1a1a1a;
+}
 .small-button {
   background: #1f1f1f;
   border: 1px solid rgba(255, 255, 255, 0.1);

@@ -26,8 +26,10 @@ export default function Dashboard() {
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sugPos, setSugPos] = useState({ left: 0, top: 0, width: 0 });
   const [lastUpdated, setLastUpdated] = useState(null);
   const mapRef = useRef(null);
+  const searchInputRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
   const currentCoordsRef = useRef(DEFAULT_COORDS);
@@ -36,6 +38,26 @@ export default function Dashboard() {
   const searchMarkerRef = useRef(null);
   const searchIconRef = useRef(null);
   const manualCenterRef = useRef(false);
+
+  // Cross-device precise dropdown position using visualViewport
+  const computeSugPos = useCallback(() => {
+    const el = searchInputRef.current;
+    if (!el) return { left: 0, top: 0, width: 0 };
+    const r = el.getBoundingClientRect();
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    const viewportW = vv?.width ?? window.innerWidth;
+    const viewportH = vv?.height ?? window.innerHeight;
+    const offsetLeft = vv?.offsetLeft ?? 0;
+    const offsetTop = vv?.offsetTop ?? 0;
+    const maxW = Math.min(640, viewportW - 16);
+    const width = Math.min(Math.round(r.width), maxW);
+    let left = Math.round(r.left - offsetLeft + (r.width > width ? (r.width - width) / 2 : 0));
+    left = Math.max(8, Math.min(left, Math.round(viewportW - width - 8)));
+    let top = Math.round(r.bottom - offsetTop + 6);
+    const maxListH = 240 + 8;
+    if (top + maxListH > viewportH) top = Math.max(8, viewportH - maxListH);
+    return { left, top, width };
+  }, []);
 
   // Build a Nominatim search URL with optional map bias
   const buildSearchUrl = useCallback((text, limit = 1) => {
@@ -379,14 +401,13 @@ export default function Dashboard() {
   // Fetch suggestions as the user types (debounced)
   useEffect(() => {
     const q = query.trim();
-    if (q.length < 3) {
+    if (q.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
     const id = setTimeout(async () => {
       try {
-        // Fetch both geo suggestions and lot suggestions, then merge
         const [geoData, lotData] = await Promise.all([
           (async () => {
             const url = buildSearchUrl(q, 5);
@@ -399,9 +420,18 @@ export default function Dashboard() {
           })(),
           fetchLotSuggestions(q, 5),
         ]);
-        const merged = [...lotData, ...geoData];
+        const merged = [];
+        const seen = new Set();
+        [...lotData, ...geoData].forEach((s) => {
+          const key = s.place_id || `${s.lat},${s.lon}`;
+          if (!key || seen.has(key)) return;
+          seen.add(key);
+          merged.push(s);
+        });
         setSuggestions(merged);
-        setShowSuggestions(merged.length > 0);
+        const has = merged.length > 0;
+        setShowSuggestions(has);
+        if (has) setSugPos(computeSugPos());
       } catch (e) {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -409,7 +439,25 @@ export default function Dashboard() {
       }
     }, 400);
     return () => clearTimeout(id);
-  }, [query, buildSearchUrl, fetchLotSuggestions]);
+  }, [query, buildSearchUrl, fetchLotSuggestions, computeSugPos]);
+
+  // Keep dropdown aligned while it’s open (resize/scroll)
+  useEffect(() => {
+    if (!showSuggestions) return;
+    const updatePos = () => setSugPos(computeSugPos());
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", updatePos);
+    vv?.addEventListener("scroll", updatePos);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+      vv?.removeEventListener("resize", updatePos);
+      vv?.removeEventListener("scroll", updatePos);
+    };
+  }, [showSuggestions, computeSugPos]);
 
   // When a suggestion is clicked
   const pickSuggestion = useCallback(
@@ -420,10 +468,7 @@ export default function Dashboard() {
           latitude: parseFloat(sug.lat),
           longitude: parseFloat(sug.lon),
         };
-        setQuery(
-          (isLot ? sug.display_name : sug.display_name) ||
-            `${sug.lat}, ${sug.lon}`
-        );
+        setQuery(sug.display_name || `${sug.lat}, ${sug.lon}`);
         setError("");
         setNotice(`Centered to: ${sug.display_name || "Selected"}`);
         const map = mapInstanceRef.current;
@@ -633,13 +678,48 @@ export default function Dashboard() {
       <div className={`dashboard-content${expand ? " blurred" : ""}`}>
         <h2 className="dashboard-title">📍 Park Nearby with ParkEasy</h2>
         <div className="controls-row">
+          <div className="search-wrap">
           <input
             className="search-input"
             placeholder="Search a location (city, address)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowSuggestions(true);
+              setSugPos(computeSugPos());
+            }}
+            onBlur={() => {
+              // small delay so click can register before list hides
+              setTimeout(() => setShowSuggestions(false), 120);
+            }}
+            ref={searchInputRef}
           />
+
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              className="sug-list"
+              style={{
+                position: "fixed",
+                left: sugPos.left,
+                top: sugPos.top,
+                width: sugPos.width,
+                zIndex: 1000,
+              }}
+            >
+              {suggestions.map((s) => (
+                <div
+                  key={`${s.place_id}`}
+                  className="sug-item"
+                  onClick={() => pickSuggestion(s)}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  {s.display_name}
+                </div>
+              ))}
+            </div>
+          )}
+          </div>
           <button className="small-button" onClick={handleSearch}>
             Search
           </button>
@@ -652,43 +732,14 @@ export default function Dashboard() {
             {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : ""}
           </div>
         </div>
-
-        {showSuggestions && suggestions.length > 0 && (
-          <div
-            style={{
-              position: "absolute",
-              background: "#fff",
-              border: "1px solid #e5e7eb",
-              borderRadius: 6,
-              marginTop: 6,
-              zIndex: 1000,
-              maxHeight: 240,
-              overflowY: "auto",
-              width: "min(92vw, 640px)",
-            }}
-          >
-            {suggestions.map((s) => (
-              <div
-                key={`${s.place_id}`}
-                onClick={() => pickSuggestion(s)}
-                style={{
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                  borderBottom: "1px solid #f3f4f6",
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-              >
-                {s.display_name}
-              </div>
-            ))}
-          </div>
-        )}
+        
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
         </div>
         {notice && !error && (
           <p style={{ color: "#2563eb", marginBottom: 12 }}>{notice}</p>
         )}
+
 
         {loading && (
           <div className="loading-wrap">
@@ -741,10 +792,7 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div
-                              className="bar"
-                              title={`${percentage}% filled`}
-                            >
+                            <div className="bar" title={`${percentage}% filled`}>
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
@@ -754,9 +802,7 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div className={`status-pill ${status.cls}`}>
-                      {status.label}
-                    </div>
+                    <div className={`status-pill ${status.cls}`}>{status.label}</div>
                   </div>
                   <div className="slot-back">
                     <div className="slot-back-header">
@@ -776,10 +822,7 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div
-                              className="bar"
-                              title={`${percentage}% filled`}
-                            >
+                            <div className="bar" title={`${percentage}% filled`}>
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
