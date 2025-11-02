@@ -1,12 +1,12 @@
 .parkinglots-container {
-  min-height: 100vh;
+  min-height: 100svh;
   background-color: #f3f4f6;
-  padding: 24px;
+  padding: clamp(16px, 3vw, 24px);
   font-family: Arial, sans-serif;
 }
 
 .parkinglots-title {
-  font-size: 28px;
+  font-size: clamp(22px, 3.4vw, 28px);
   font-weight: bold;
   color: #1d4ed8;
   margin-bottom: 24px;

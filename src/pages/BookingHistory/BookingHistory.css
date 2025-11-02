@@ -1,7 +1,7 @@
 .history-container {
-  max-width: 650px;
-  margin: 48px auto;
-  padding: 28px 24px 24px 24px;
+  max-width: min(650px, 92vw);
+  margin: clamp(16px, 6vw, 48px) auto;
+  padding: clamp(18px, 3.2vw, 28px) clamp(12px, 3vw, 24px) clamp(16px, 3vw, 24px);
   background: #18181b;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
@@ -32,7 +32,7 @@
 }
 
 .history-title {
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 4.5vw, 2rem);
   text-align: center;
   color: #3b82f6;
   margin-bottom: 28px;
