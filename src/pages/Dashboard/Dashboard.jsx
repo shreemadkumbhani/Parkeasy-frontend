@@ -633,13 +633,29 @@ export default function Dashboard() {
       <div className={`dashboard-content${expand ? " blurred" : ""}`}>
         <h2 className="dashboard-title">📍 Park Nearby with ParkEasy</h2>
         <div className="controls-row">
-          <input
-            className="search-input"
-            placeholder="Search a location (city, address)"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
+          <div className="search-wrap">
+            <input
+              className="search-input"
+              placeholder="Search a location (city, address)"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="suggestions">
+                {suggestions.map((s) => (
+                  <div
+                    key={`${s.place_id}`}
+                    className="suggestion-item"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => pickSuggestion(s)}
+                  >
+                    {s.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <button className="small-button" onClick={handleSearch}>
             Search
           </button>
@@ -653,36 +669,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {showSuggestions && suggestions.length > 0 && (
-          <div
-            style={{
-              position: "absolute",
-              background: "#fff",
-              border: "1px solid #e5e7eb",
-              borderRadius: 6,
-              marginTop: 6,
-              zIndex: 1000,
-              maxHeight: 240,
-              overflowY: "auto",
-              width: "min(92vw, 640px)",
-            }}
-          >
-            {suggestions.map((s) => (
-              <div
-                key={`${s.place_id}`}
-                onClick={() => pickSuggestion(s)}
-                style={{
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                  borderBottom: "1px solid #f3f4f6",
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-              >
-                {s.display_name}
-              </div>
-            ))}
-          </div>
-        )}
 
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
