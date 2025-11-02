@@ -1,6 +1,6 @@
 // Navigation bar component for ParkEasy app
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -17,20 +17,31 @@ export default function Navbar() {
   });
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const syncAuthFromStorage = useCallback(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+    try {
+      setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    } catch {
+      setUser(null);
+    }
+  }, []);
+
   useEffect(() => {
     function onStorage(e) {
       if (e.key === "token" || e.key === "user" || e.key === "auth:tick") {
-        setIsLoggedIn(!!localStorage.getItem("token"));
-        try {
-          setUser(JSON.parse(localStorage.getItem("user") || "null"));
-        } catch {
-          setUser(null);
-        }
+        syncAuthFromStorage();
       }
     }
+    function onAuthChanged() {
+      syncAuthFromStorage();
+    }
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+    window.addEventListener("auth:changed", onAuthChanged);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("auth:changed", onAuthChanged);
+    };
+  }, [syncAuthFromStorage]);
   const navigate = useNavigate();
 
   // Lock body scroll robustly when mobile menu is open (prevents underlay scroll/interactions)

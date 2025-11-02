@@ -24,6 +24,17 @@ export default function Login() {
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      // Notify same-tab listeners and other tabs immediately
+      try {
+        localStorage.setItem("auth:tick", String(Date.now()));
+      } catch (e) {
+        void e;
+      }
+      try {
+        window.dispatchEvent(new Event("auth:changed"));
+      } catch (e) {
+        void e;
+      }
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
