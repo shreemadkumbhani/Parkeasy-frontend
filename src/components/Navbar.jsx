@@ -33,6 +33,16 @@ export default function Navbar() {
   }, []);
   const navigate = useNavigate();
 
+  // Lock body scroll when mobile menu is open (prevents map/underlay scroll)
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
   // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -118,8 +128,21 @@ export default function Navbar() {
         )}
       </ul>
       {menuOpen && (
-        <div className="mobile-menu" onClick={() => setMenuOpen(false)}>
-          <ul>
+        <div className="mobile-overlay" onClick={() => setMenuOpen(false)}>
+          <div
+            className="mobile-menu"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              className="menu-close"
+              aria-label="Close menu"
+              onClick={() => setMenuOpen(false)}
+            >
+              ✕
+            </button>
+            <ul>
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -158,7 +181,8 @@ export default function Navbar() {
                 </li>
               </>
             )}
-          </ul>
+            </ul>
+          </div>
         </div>
       )}
     </nav>
