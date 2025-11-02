@@ -51,7 +51,9 @@ export default function Dashboard() {
     const offsetTop = vv?.offsetTop ?? 0;
     const maxW = Math.min(640, viewportW - 16);
     const width = Math.min(Math.round(r.width), maxW);
-    let left = Math.round(r.left - offsetLeft + (r.width > width ? (r.width - width) / 2 : 0));
+    let left = Math.round(
+      r.left - offsetLeft + (r.width > width ? (r.width - width) / 2 : 0)
+    );
     left = Math.max(8, Math.min(left, Math.round(viewportW - width - 8)));
     let top = Math.round(r.bottom - offsetTop + 6);
     const maxListH = 240 + 8;
@@ -679,46 +681,46 @@ export default function Dashboard() {
         <h2 className="dashboard-title">📍 Park Nearby with ParkEasy</h2>
         <div className="controls-row">
           <div className="search-wrap">
-          <input
-            className="search-input"
-            placeholder="Search a location (city, address)"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            onFocus={() => {
-              if (suggestions.length > 0) setShowSuggestions(true);
-              setSugPos(computeSugPos());
-            }}
-            onBlur={() => {
-              // small delay so click can register before list hides
-              setTimeout(() => setShowSuggestions(false), 120);
-            }}
-            ref={searchInputRef}
-          />
-
-          {showSuggestions && suggestions.length > 0 && (
-            <div
-              className="sug-list"
-              style={{
-                position: "fixed",
-                left: sugPos.left,
-                top: sugPos.top,
-                width: sugPos.width,
-                zIndex: 1000,
+            <input
+              className="search-input"
+              placeholder="Search a location (city, address)"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              onFocus={() => {
+                if (suggestions.length > 0) setShowSuggestions(true);
+                setSugPos(computeSugPos());
               }}
-            >
-              {suggestions.map((s) => (
-                <div
-                  key={`${s.place_id}`}
-                  className="sug-item"
-                  onClick={() => pickSuggestion(s)}
-                  onMouseDown={(e) => e.preventDefault()}
-                >
-                  {s.display_name}
-                </div>
-              ))}
-            </div>
-          )}
+              onBlur={() => {
+                // small delay so click can register before list hides
+                setTimeout(() => setShowSuggestions(false), 120);
+              }}
+              ref={searchInputRef}
+            />
+
+            {showSuggestions && suggestions.length > 0 && (
+              <div
+                className="sug-list"
+                style={{
+                  position: "fixed",
+                  left: sugPos.left,
+                  top: sugPos.top,
+                  width: sugPos.width,
+                  zIndex: 1000,
+                }}
+              >
+                {suggestions.map((s) => (
+                  <div
+                    key={`${s.place_id}`}
+                    className="sug-item"
+                    onClick={() => pickSuggestion(s)}
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
+                    {s.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button className="small-button" onClick={handleSearch}>
             Search
@@ -732,14 +734,13 @@ export default function Dashboard() {
             {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : ""}
           </div>
         </div>
-        
+
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
         </div>
         {notice && !error && (
           <p style={{ color: "#2563eb", marginBottom: 12 }}>{notice}</p>
         )}
-
 
         {loading && (
           <div className="loading-wrap">
@@ -792,7 +793,10 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div className="bar" title={`${percentage}% filled`}>
+                            <div
+                              className="bar"
+                              title={`${percentage}% filled`}
+                            >
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
@@ -802,7 +806,9 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div className={`status-pill ${status.cls}`}>{status.label}</div>
+                    <div className={`status-pill ${status.cls}`}>
+                      {status.label}
+                    </div>
                   </div>
                   <div className="slot-back">
                     <div className="slot-back-header">
@@ -822,7 +828,10 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div className="bar" title={`${percentage}% filled`}>
+                            <div
+                              className="bar"
+                              title={`${percentage}% filled`}
+                            >
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
