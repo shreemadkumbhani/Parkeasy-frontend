@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Reduce root padding on small screens to avoid squeezing/overflow */
+@media (max-width: 480px) {
+  #root {
+    padding: 12px;
+  }
+}

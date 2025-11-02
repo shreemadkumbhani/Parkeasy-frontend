@@ -7,6 +7,7 @@ body {
 
 .home {
   width: 100%;
+  overflow-x: hidden; /* guard against accidental horizontal overflow */
 }
 
 .home-header {
@@ -307,6 +308,10 @@ body {
 @media (max-width: 640px) {
   .hero-content h2 {
     font-size: 2rem;
+  }
+  .hero-content {
+    padding: 20px;
+    margin: 0 12px; /* ensure breathing room on tiny screens */
   }
   .stats {
     grid-template-columns: 1fr;
