@@ -41,7 +41,8 @@ body {
   position: relative;
   background: url("https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2000&auto=format&fit=crop")
     center/cover no-repeat;
-  min-height: 70vh;
+  /* Use visual viewport height units for better mobile behavior */
+  min-height: 65svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,18 +74,18 @@ body {
   );
   backdrop-filter: blur(10px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  padding: 40px;
+  padding: clamp(16px, 4vw, 40px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .hero-content h2 {
-  font-size: 2.6rem;
+  font-size: clamp(1.6rem, 4vw + 0.8rem, 2.6rem);
   margin-bottom: 10px;
 }
 
 .hero-content p {
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 1.2vw + 0.7rem, 1.1rem);
   margin-bottom: 20px;
 }
 
@@ -109,12 +110,14 @@ body {
   gap: 12px;
   margin-top: 12px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 .quick-search {
   display: flex;
   gap: 8px;
   margin-top: 14px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 .quick-search input {
   background: rgba(0, 0, 0, 0.45);
@@ -122,7 +125,9 @@ body {
   color: #fff;
   padding: 10px 12px;
   border-radius: 8px;
-  width: min(360px, 80vw);
+  width: min(460px, 90vw);
+  flex: 1 1 240px;
+  min-width: 0;
 }
 .quick-search button {
   background: #3b82f6;
@@ -131,6 +136,7 @@ body {
   padding: 10px 14px;
   border-radius: 8px;
   cursor: pointer;
+  flex: 0 0 auto;
 }
 .quick-search button:hover {
   background: #2563eb;
@@ -173,10 +179,10 @@ body {
 /* Stats */
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
-  padding: 28px 16px;
-  max-width: 980px;
+  padding: clamp(20px, 3vw, 28px) 16px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 .stat {
@@ -187,7 +193,7 @@ body {
   text-align: center;
 }
 .stat .num {
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 3.2vw, 2rem);
   font-weight: 800;
 }
 .stat .label {
@@ -203,7 +209,7 @@ body {
   text-align: center;
 }
 .features h3 {
-  font-size: 1.9rem;
+  font-size: clamp(1.4rem, 2.8vw, 1.9rem);
   margin-bottom: 18px;
 }
 .feature-grid {
@@ -230,7 +236,7 @@ body {
 
 /* How it works */
 .how {
-  padding: 30px 16px;
+  padding: clamp(22px, 3vw, 30px) 16px;
   max-width: 1100px;
   margin: 0 auto;
   text-align: center;
@@ -261,7 +267,7 @@ body {
 
 /* Testimonials */
 .testimonials {
-  padding: 30px 16px;
+  padding: clamp(22px, 3vw, 30px) 16px;
   max-width: 1000px;
   margin: 0 auto;
   text-align: center;
@@ -284,7 +290,7 @@ body {
 
 /* FAQ */
 .faq {
-  padding: 34px 16px;
+  padding: clamp(24px, 3.5vw, 34px) 16px;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -307,13 +313,20 @@ body {
 /* Responsive */
 @media (max-width: 640px) {
   .hero-content h2 {
-    font-size: 2rem;
+    font-size: clamp(1.4rem, 6vw, 2rem);
   }
   .hero-content {
     padding: 20px;
     margin: 0 12px; /* ensure breathing room on tiny screens */
   }
-  .stats {
-    grid-template-columns: 1fr;
+}
+
+/* Ultra-small devices: extra breathing room and smaller hero */
+@media (max-width: 360px) {
+  .hero {
+    min-height: 55svh;
+  }
+  .hero-content {
+    padding: 16px;
   }
 }
