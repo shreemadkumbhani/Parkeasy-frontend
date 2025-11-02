@@ -66,9 +66,11 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
-  max-height: calc(100vh - 16px);
+  /* Use visual viewport height keywords to avoid iOS 100vh issues */
+  max-height: calc(100svh - 16px);
   overflow-y: auto;
-  z-index: 1001; /* above overlay */
+  -webkit-overflow-scrolling: touch;
+  z-index: 10000; /* above overlay and map panes */
 }
 .mobile-menu ul {
   list-style: none;
@@ -90,11 +92,18 @@
 /* Translucent fullscreen backdrop to block interactions with map/content */
 .mobile-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-  z-index: 1000; /* above map and navbar */
+  /* Ensure the backdrop always sits above any Leaflet panes/controls */
+  z-index: 9999;
+  /* Prevent rubber-band and scrolling on the backdrop */
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .menu-close {

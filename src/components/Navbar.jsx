@@ -33,13 +33,32 @@ export default function Navbar() {
   }, []);
   const navigate = useNavigate();
 
-  // Lock body scroll when mobile menu is open (prevents map/underlay scroll)
+  // Lock body scroll robustly when mobile menu is open (prevents underlay scroll/interactions)
   useEffect(() => {
     if (!menuOpen) return;
-    const prev = document.body.style.overflow;
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overscroll: document.documentElement.style.overscrollBehavior,
+    };
+    // Prevent background scroll and iOS rubber-band
+    document.documentElement.style.overscrollBehavior = "none";
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
     return () => {
-      document.body.style.overflow = prev;
+      // Restore styles and scroll position
+      document.body.style.overflow = prev.overflow;
+      document.body.style.position = prev.position;
+      document.body.style.top = prev.top;
+      document.body.style.width = prev.width;
+      document.documentElement.style.overscrollBehavior = prev.overscroll;
+      window.scrollTo(0, scrollY);
     };
   }, [menuOpen]);
 
