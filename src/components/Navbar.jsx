@@ -163,34 +163,34 @@ export default function Navbar() {
             </button>
             <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
             </li>
             <li>
-              <Link to="/about">About</Link>
+              <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
             </li>
             {!isLoggedIn && (
               <>
                 <li>
-                  <Link to="/login">Login</Link>
+                  <Link to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
                 </li>
                 <li>
-                  <Link to="/register">Register</Link>
+                  <Link to="/register" onClick={() => setMenuOpen(false)}>Register</Link>
                 </li>
               </>
             )}
             {isLoggedIn && (
               <>
                 <li>
-                  <Link to="/dashboard">Dashboard</Link>
+                  <Link to="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</Link>
                 </li>
                 <li>
-                  <Link to="/booking-history">History</Link>
+                  <Link to="/booking-history" onClick={() => setMenuOpen(false)}>History</Link>
                 </li>
                 <li>
                   {user?.role === "owner" ? (
-                    <Link to="/owner/register">Add Parking</Link>
+                    <Link to="/owner/register" onClick={() => setMenuOpen(false)}>Add Parking</Link>
                   ) : (
-                    <Link to="/owner/register">Become Owner</Link>
+                    <Link to="/owner/register" onClick={() => setMenuOpen(false)}>Become Owner</Link>
                   )}
                 </li>
                 <li>
