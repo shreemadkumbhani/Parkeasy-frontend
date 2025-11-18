@@ -1,5 +1,6 @@
 // Dashboard page for users to view and book nearby parking lots
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE } from "../../config";
 import "./Dashboard.css";
@@ -11,6 +12,7 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 const DEFAULT_COORDS = { latitude: 23.0512, longitude: 72.6677 };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   // State variables for parking lots, loading, errors, booking, and UI
   const [parkingLots, setParkingLots] = useState([]); // List of nearby parking lots (5km radius)
   const [allParkingLots, setAllParkingLots] = useState([]); // All parking lots for map display
@@ -769,26 +771,21 @@ export default function Dashboard() {
     setBookingMsg("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+      await axios.post(
         `${API_BASE}/api/parkinglots/${selectedLot._id}/book`,
         { hour: bookingHour },
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
       );
-      setBookingMsg("Slot booked successfully!");
       // Signal other tabs/pages (History) to update immediately
       try {
         localStorage.setItem("bookings:refresh", "1");
       } catch {
         // ignore storage signaling errors
       }
-      // Update lot info in UI
-      setParkingLots((lots) =>
-        lots.map((l) => (l._id === selectedLot._id ? res.data.lot : l))
-      );
-      setSelectedLot(res.data.lot);
+      // Redirect to booking history page
+      navigate("/booking-history");
     } catch (err) {
       setBookingMsg(err.response?.data?.message || "Booking failed");
-    } finally {
       setBookingLoading(false);
     }
   }
@@ -1215,11 +1212,7 @@ export default function Dashboard() {
                   <button
                     className="confirm-button"
                     onClick={handleBookSlot}
-                    disabled={
-                      bookingLoading ||
-                      !bookingHour ||
-                      Number(selectedLot?.availableSlots || 0) < 1
-                    }
+                    disabled={bookingLoading || !bookingHour}
                   >
                     {bookingLoading ? "Booking..." : "Book Slot"}
                   </button>
